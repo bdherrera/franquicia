@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+target
+.git
+.gitignore
+.vscode
+
+
+
+Dockerfile
+docker-compose.yml
+README.md

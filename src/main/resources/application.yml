@@ -1,26 +1,32 @@
-  spring:
-    application:
-      name: franquicias-api
+spring:
+  application:
+    name: franquicias-api
 
-    datasource:
-      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/franquicias_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC}
-      username: ${SPRING_DATASOURCE_USERNAME:root}
-      password: ${SPRING_DATASOURCE_PASSWORD:admin}
-      driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/franquicias_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
       hibernate:
-        ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
+        format_sql: ${SPRING_JPA_FORMAT_SQL:true}
 
-  server:
-    port: 8080
+server:
+  port: 8080
 
-  springdoc:
-    swagger-ui:
-      enabled: true
-    api-docs:
-      enabled: true
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
