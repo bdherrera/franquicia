@@ -1,31 +1,37 @@
-# ===== Etapa 1: build =====
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+version: "3.9"
 
-WORKDIR /app
-  
-  # Copiar primero archivos de dependencias para aprovechar caché
-COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-RUN chmod +x mvnw
-  
-  # Descargar dependencias
-RUN ./mvnw dependency:go-offline
-  
-  # Copiar código fuente
-COPY src ./src
-  
-  # Empaquetar la aplicación
-RUN ./mvnw clean package -DskipTests
-  
-  # ===== Etapa 2: runtime =====
-FROM eclipse-temurin:21-jre
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: franquicias-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: franquicias_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-padmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
-WORKDIR /app
-  
-  # Copiar el jar generado
-COPY --from=build /app/target/*.jar app.jar
+  app:
+    build: .
+    container_name: franquicias-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/franquicias_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_FORMAT_SQL: "true"
+    ports:
+      - "8080:8080"
 
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+volumes:
+  mysql_data:
