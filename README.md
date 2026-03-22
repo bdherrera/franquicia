@@ -261,3 +261,25 @@ docker compose ps        # estado de los servicios
 | `mvn clean package -DskipTests` | Compilar sin ejecutar tests |
 | `mvn spring-boot:run` | Ejecutar la app con Maven |
 | `mvn test` | Ejecutar los tests unitarios |
+
+
+## Despliegue en AWS
+
+La API está desplegada en AWS App Runner (us-east-2):
+
+**URL base:** https://jv32bahzin.us-east-2.awsapprunner.com
+
+| Recurso | URL |
+|---|---|
+| Swagger UI | https://jv32bahzin.us-east-2.awsapprunner.com/swagger-ui/index.html |
+| Health check | https://jv32bahzin.us-east-2.awsapprunner.com/actuator/health |
+| OpenAPI JSON | https://jv32bahzin.us-east-2.awsapprunner.com/v3/api-docs |
+
+### Infraestructura utilizada
+
+| Servicio | Uso |
+|---|---|
+| Amazon ECR | Registro privado de la imagen Docker |
+| Amazon RDS MySQL 8.0 | Base de datos en subred privada sin acceso público |
+| AWS App Runner | Despliegue y escalado automático del contenedor |
+| VPC + VPC Connector | Comunicación privada entre App Runner y RDS |
